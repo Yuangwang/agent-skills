@@ -14,8 +14,12 @@ to create them.
 - **Firebase CLI**: Installed and logged in (see `firebase-basics`).
 - **Firebase Project**: Created via
   `npx -y firebase-tools@latest projects:create` (see `firebase-basics`).
-- **Firebase App**: Created via
-  `npx -y firebase-tools@latest apps:create ANDROID <display-name> --package-name=<package-name>`
+- **Firebase App**: Created via:
+
+  ```bash
+  npx -y firebase-tools@latest apps:create ANDROID <display-name> \
+    --package-name=<package-name>
+  ```
 
 The `google-services.json` file must be present in the Android app's module
 directory. If missing, get the config using the Firebase CLI:
@@ -50,14 +54,26 @@ plugins {
    ```
 
 1. Add the Firebase Remote Config and Analytics dependencies. Using the Firebase
-   Bill of Materials (BoM) is the best practice for version management.
+   Bill of Materials (BoM) is the best practice for version management. Resolve
+   the latest `firebase-bom` version deterministically from Google Maven before
+   editing `build.gradle.kts`:
+
+   ```bash
+   MAVEN_REPO="https://dl.google.com/dl/android/maven2/com/google/firebase"
+   curl -s "$MAVEN_REPO/firebase-bom/maven-metadata.xml" | grep '<release>'
+   ```
+
+   Do **not** use deprecated `-ktx` dependencies (`firebase-config-ktx` or
+   `firebase-analytics-ktx`).
 
    ```kotlin
    dependencies {
        // ... other dependencies
 
        // Import the Firebase BoM
-       implementation(platform("com.google.firebase:firebase-bom:<latest_bom_version>"))
+       implementation(
+           platform("com.google.firebase:firebase-bom:<latest_bom_version>")
+       )
 
        // Add the dependencies for Remote Config and Analytics
        implementation("com.google.firebase:firebase-config")
