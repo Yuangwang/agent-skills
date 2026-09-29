@@ -44,7 +44,7 @@ templates:
 
 1. **Read the Companion Skills First**:
    - Always consult `firebase-remote-config-templates` before mutating any
-     template JSON or running CLI/REST/MCP commands.
+     template JSON or running CLI/REST commands.
    - If the task also modifies or creates client application code or in-app
      defaults, consult `firebase-remote-config-basics`.
 1. **Execute Safe Atomic Read-Modify-Write (RMW)**:
