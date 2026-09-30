@@ -38,31 +38,43 @@ Complete these setup steps before proceeding:
        [references/setup/other_agents.md](references/setup/other_agents.md)
 
 1. **Authentication:** Ensure you are logged in to Firebase so that commands
-   have the correct permissions. Run `npx -y firebase-tools@latest login`. For
-   environments without a browser (e.g., remote shells), use
-   `npx -y firebase-tools@latest login --no-localhost`.
+   have the correct permissions. First check if a user is already logged in by
+   running `npx -y firebase-tools@latest login:list`.
 
-   - The command should output the current user.
-   - If you are not logged in, follow the interactive instructions from this
-     command to authenticate.
+   - If `login:list` outputs an active account (`Logged in as ...`), you are
+     already authenticated—do **not** run `login` (because `login` triggers an
+     interactive or remote login flow and fails in non-interactive/agent mode).
+   - Only if no account is logged in, run `npx -y firebase-tools@latest login`
+     (or `npx -y firebase-tools@latest login --no-localhost` in environments
+     without a browser).
 
 1. **Active Project:** Most Firebase tasks require an active project context.
 
    > [!IMPORTANT] **For Agents:** Before proceeding with project configuration,
-   > you MUST pause and ask the developer if they prefer to:
+   > if the user has not already specified a Project ID in their prompt, pause
+   > and ask the developer if they prefer to:
    >
    > 1. **Provide an existing Firebase Project ID**, or
    > 1. **Create a new Firebase project**.
 
    - **If using an existing Project ID:**
 
+     1. Ensure a `firebase.json` file exists in the current directory first (for
+        example, initialize `{}` if `firebase.json` does not exist yet), because
+        `firebase use` fails with
+        `Not in a Firebase app directory (could not locate firebase.json)` if
+        run before `firebase.json` is created.
+
      1. Check the current project by running `npx -y firebase-tools@latest use`.
+
      1. If the command outputs `Active Project: <project-id>`, confirm with the
         user if this is the intended project.
+
      1. If not, or if no project is active, set the project provided by the
         user:
-        
+
         ```bash
+        [ -f firebase.json ] || echo "{}" > firebase.json
         npx -y firebase-tools@latest use <PROJECT_ID>
         ```
 
@@ -112,10 +124,16 @@ Adhere to these principles:
      [references/refresh/android_studio.md](references/refresh/android_studio.md)
    - **Others**: Follow
      [references/refresh/other-agents.md](references/refresh/other-agents.md)
-1. **Automate Config File Retrieval:** When setting up iOS or Android apps, do
-   NOT direct users to the Firebase Console to download `google-services.json`
-   or `GoogleService-Info.plist`. Instead, use the Firebase CLI to fetch the
-   config programmatically:
+1. **Automate Config File Retrieval:** When setting up Web, iOS, or Android
+   apps, do NOT direct users to the Firebase Console to download SDK configs,
+   `google-services.json`, or `GoogleService-Info.plist`. Instead, use the
+   Firebase CLI to fetch the config programmatically:
+   - For Web: First check existing Web apps with
+     `npx -y firebase-tools@latest apps:list WEB --project <PROJECT_ID>` (reuse
+     an existing Web `<APP_ID>` if present), then run:
+     `npx -y firebase-tools@latest apps:sdkconfig WEB <APP_ID> --project <PROJECT_ID>`
+     *(Important: You MUST pass both `WEB` and `<APP_ID>`—running
+     `apps:sdkconfig <APP_ID>` without `WEB` fails with `Unexpected platform`.)*
    - For Android:
      `npx -y firebase-tools@latest apps:sdkconfig ANDROID <APP_ID> --project <PROJECT_ID>`
    - For iOS:
@@ -141,8 +159,9 @@ Adhere to these principles:
 
 - **Login Issues:** If the browser fails to open during the login step, use
   `npx -y firebase-tools@latest login --no-localhost` instead.
+
 - **Genkit:** If using Genkit, install the skills:
-  
+
   ```bash
   npx skills add genkit-ai/skills
   ```
