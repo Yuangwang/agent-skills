@@ -25,6 +25,27 @@ using the Firebase Console.
 
 - **Purpose**: Lists all backends in the current project.
 
+### `npx -y firebase-tools@latest apphosting:backends:create`
+
+- **Purpose**: Creates a new App Hosting backend resource (completes in ~5s
+  without triggering a build rollout when `--backend` and `--primary-region` are
+  passed). **Required in non-interactive/agent environments before the first
+  `firebase deploy` and before `apphosting:secrets:set`.**
+- **Non-Interactive Example**:
+  ```bash
+  npx -y firebase-tools@latest apphosting:backends:create --backend <backendId> --primary-region us-central1 --root-dir / --project <projectId>
+  ```
+- **Options**:
+  - `--app <webAppId>`: The ID of an existing Firebase web app to associate with
+    the backend.
+  - `--backend <backendId>`: The ID of the new backend.
+  - `--primary-region <location>`: The primary region for the backend (e.g.
+    `us-central1` or `us-east4`).
+  - `--root-dir <rootDir>`: The root directory for the backend. If omitted,
+    defaults to the root directory of the project.
+  - `--service-account <service-account>`: The service account used to run the
+    server. If omitted, defaults to the default service account.
+
 ### `npx -y firebase-tools@latest apphosting:backends:get <backend-id>`
 
 - **Purpose**: Shows details for a specific backend.
@@ -33,53 +54,40 @@ using the Firebase Console.
 
 - **Purpose**: Deletes a backend and its associated resources.
 
-### `npx -y firebase-tools@latest apphosting:rollouts:list <backend-id>`
-
-- **Purpose**: Lists the history of rollouts for a backend.
-
 ## Secrets Management
 
 App Hosting uses Cloud Secret Manager to securely handle sensitive environment
-variables (like API keys).
+variables (like API keys). Always ensure the App Hosting backend exists first
+(`apphosting:backends:create`) before setting secrets so the App Hosting compute
+service account is provisioned.
 
-### `npx -y firebase-tools@latest apphosting:secrets:set <secret-name>`
+### `npx -y firebase-tools@latest apphosting:secrets:set <secret-name> --data-file - --force`
 
 - **Purpose**: Creates or updates a secret in Cloud Secret Manager and makes it
   available to App Hosting.
-- **Behavior**: Prompts for the secret value (hidden input).
+- **Non-Interactive / Agent Usage**: Pipe the value via stdin with
+  `--data-file - --force`:
+  ```bash
+  printf "%s" "<secret-value>" | npx -y firebase-tools@latest apphosting:secrets:set <secret-name> --project <project-id> --data-file - --force
+  ```
 
-### `npx -y firebase-tools@latest apphosting:secrets:grantaccess <secret-name>`
+### `npx -y firebase-tools@latest apphosting:secrets:grantaccess <secret-name> --backend <backend-id>`
 
-- **Purpose**: Grants the App Hosting service account permission to access the
-  secret.
-- **Note**: Often handled automatically by `secrets:set`, but useful for
-  debugging permission issues or granting access to existing secrets.
+- **Purpose**: Grants the App Hosting backend's service account permission to
+  access the secret.
+- **Note**: The `--backend <backend-id>` flag is **required**. Always run
+  `grantaccess --backend <backend-id>` when reusing or updating an existing
+  secret (as `secrets:set` only auto-grants access when creating a brand-new
+  secret).
 
 ## Automated deployment via GitHub (CI/CD)
 
-**IMPORTANT** Only use these commands if you are setting up automated
-deployments via GitHub. If you are managing deployments using
-`npx -y firebase-tools@latest deploy`, DO NOT use these commands.
-
 ### `npx -y firebase-tools@latest apphosting:rollouts:create <backend-id>`
 
-- **Purpose**: Manually triggers a new rollout (deployment).
+- **Purpose**: Manually triggers a new rollout from a connected GitHub
+  repository.
 - **Options**:
   - `--git-branch <branch>`: Deploy the latest commit from a specific branch.
   - `--git-commit <commit-hash>`: Deploy a specific commit.
-- **Use Case**: Useful for redeploying without code changes, or rolling back to
-  a specific commit.
-
-### `npx -y firebase-tools@latest apphosting:backends:create`
-
-- **Purpose**: Creates a new App Hosting backend. Use this when setting up
-  automated deployments via GitHub.
-- **Options**:
-  - `--app <webAppId>`: The ID of an existing Firebase web app to associate with
-    the backend.
-  - `--backend <backendId>`: The ID of the new backend.
-  - `--primary-region <location>`: The primary region for the backend.
-  - `--root-dir <rootDir>`: The root directory for the backend. If omitted,
-    defaults to the root directory of the project.
-  - `--service-account <service-account>`: The service account used to run the
-    server. If omitted, defaults to the default service account.
+- **Use Case**: Only for backends connected to GitHub CI/CD. For local source
+  deployments, use `npx -y firebase-tools@latest deploy --only apphosting`.
