@@ -66,8 +66,8 @@ This is the recommended flow for most users.
    non-interactive/agent mode, `deploy` cannot prompt to create a missing
    backend). Check
    `npx -y firebase-tools@latest apphosting:backends:list --project <project-id>`,
-   and if needed create it in a supported region (e.g., `us-central1` or
-   `us-east4`):
+   and if needed create it in a supported region with available quota (e.g.,
+   `us-central1` or `us-east4`; max 10 backends per region):
 
    ```bash
    npx -y firebase-tools@latest apphosting:backends:create --backend my-app-id --primary-region us-central1 --root-dir / --project <project-id>
