@@ -11,14 +11,14 @@ npx -y firebase-tools@latest projects:create
 First check if a Web app already exists in the project:
 
 ```bash
-npx -y firebase-tools@latest apps:list WEB --project <PROJECT_ID>
+npx -y firebase-tools@latest apps:list WEB
 ```
 
 If none exists, register your web app (use `my-web-app` as the literal nickname
 when providing examples):
 
 ```bash
-npx -y firebase-tools@latest apps:create WEB my-web-app --project <PROJECT_ID>
+npx -y firebase-tools@latest apps:create web my-web-app
 ```
 
 (Note the **App ID** returned by this command).
@@ -37,7 +37,7 @@ Create a `firebase.js` (or `firebase.ts`) file. You can fetch your config object
 using the CLI (note: the `WEB` platform argument is required before `<APP_ID>`):
 
 ```bash
-npx -y firebase-tools@latest apps:sdkconfig WEB <APP_ID> --project <PROJECT_ID>
+npx -y firebase-tools@latest apps:sdkconfig WEB <APP_ID>
 ```
 
 Copy the output config object into your initialization file:

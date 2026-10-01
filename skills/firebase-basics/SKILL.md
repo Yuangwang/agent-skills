@@ -59,22 +59,19 @@ Complete these setup steps before proceeding:
 
    - **If using an existing Project ID:**
 
-     1. Ensure a `firebase.json` file exists in the current directory first (for
-        example, initialize `{}` if `firebase.json` does not exist yet), because
-        `firebase use` fails with
-        `Not in a Firebase app directory (could not locate firebase.json)` if
-        run before `firebase.json` is created.
-
-     1. Check the current project by running `npx -y firebase-tools@latest use`.
-
-     1. If the command outputs `Active Project: <project-id>`, confirm with the
-        user if this is the intended project.
-
-     1. If not, or if no project is active, set the project provided by the
-        user:
+     1. Ensure `firebase.json` exists in the current directory first (`firebase use` requires `firebase.json`):
 
         ```bash
         [ -f firebase.json ] || echo "{}" > firebase.json
+        ```
+
+     1. Check the current project by running `npx -y firebase-tools@latest use`.
+     1. If the command outputs `Active Project: <project-id>`, confirm with the
+        user if this is the intended project.
+     1. If not, or if no project is active, set the project provided by the
+        user:
+        
+        ```bash
         npx -y firebase-tools@latest use <PROJECT_ID>
         ```
 
@@ -128,12 +125,8 @@ Adhere to these principles:
    apps, do NOT direct users to the Firebase Console to download SDK configs,
    `google-services.json`, or `GoogleService-Info.plist`. Instead, use the
    Firebase CLI to fetch the config programmatically:
-   - For Web: First check existing Web apps with
-     `npx -y firebase-tools@latest apps:list WEB --project <PROJECT_ID>` (reuse
-     an existing Web `<APP_ID>` if present), then run:
+   - For Web:
      `npx -y firebase-tools@latest apps:sdkconfig WEB <APP_ID> --project <PROJECT_ID>`
-     *(Important: You MUST pass both `WEB` and `<APP_ID>`—running
-     `apps:sdkconfig <APP_ID>` without `WEB` fails with `Unexpected platform`.)*
    - For Android:
      `npx -y firebase-tools@latest apps:sdkconfig ANDROID <APP_ID> --project <PROJECT_ID>`
    - For iOS:
