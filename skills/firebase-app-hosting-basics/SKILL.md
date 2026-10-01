@@ -36,10 +36,10 @@ to upgrade their plan.
 
 ### Deploy from Source
 
-This is the recommended flow for most users and AI coding agents.
+This is the recommended flow for most users.
 
-1. Configure `firebase.json` with an `apphosting` block:
-
+1. Configure `firebase.json` with an `apphosting` block.
+   
    ```json
    {
      "apphosting": {
@@ -50,7 +50,6 @@ This is the recommended flow for most users and AI coding agents.
          ".git",
          ".next",
          ".vercel",
-         ".env*.local",
          "firebase-debug.log",
          "firebase-debug.*.log",
          "functions"
@@ -61,37 +60,28 @@ This is the recommended flow for most users and AI coding agents.
 
 1. Create or edit `apphosting.yaml`- see
    [Configuration](references/configuration.md) for more information on how to
-   do so (including migrating any required runtime environment variables or
-   secrets from local `.env.local` / `.env` files, which are excluded from
-   source uploads).
-
-1. **Ensure the App Hosting backend exists before setting secrets or
-   deploying:** In non-interactive/agent mode, `firebase deploy` cannot
-   interactively prompt for a region to create a missing backend. First check
-   `npx -y firebase-tools@latest apphosting:backends:list --project <project-id>`.
-   If the backend does not exist yet, create it in a supported region (such as
-   `us-central1` or `us-east4`; note that each region has a quota limit of 10
-   backends per project):
+   do so (including declaring any required environment variables or secrets from
+   local `.env*` files).
+1. Ensure the App Hosting backend exists before setting secrets or deploying (in
+   non-interactive/agent mode, `deploy` cannot prompt to create a missing
+   backend). Check
+   `npx -y firebase-tools@latest apphosting:backends:list --project <project-id>`,
+   and if needed create it in a supported region (e.g., `us-central1` or
+   `us-east4`):
 
    ```bash
    npx -y firebase-tools@latest apphosting:backends:create --backend my-app-id --primary-region us-central1 --root-dir / --project <project-id>
    ```
 
-1. **Set and grant access to secrets (*after* the backend exists):** If the app
-   needs safe access to sensitive keys in `apphosting.yaml`, set each secret
-   non-interactively via stdin and explicitly grant backend access:
+1. If the app needs safe access to sensitive keys in `apphosting.yaml`, set and
+   grant access to each secret (*after* the backend exists):
 
    ```bash
    printf "%s" "<secret-value>" | npx -y firebase-tools@latest apphosting:secrets:set <secret-name> --project <project-id> --data-file - --force
    npx -y firebase-tools@latest apphosting:secrets:grantaccess <secret-name> --backend my-app-id --project <project-id>
    ```
 
-1. Run
-   `npx -y firebase-tools@latest deploy --only apphosting --project <project-id>`
-   (or `npx -y firebase-tools@latest deploy --project <project-id>`) when you
-   are ready to deploy. Wait for `deploy` to complete—do **not** run
-   `apphosting:rollouts:list` (it is an internal-only command not available in
-   standard CLI installs).
+1. Run `npx -y firebase-tools@latest deploy` when you are ready to deploy.
 
 ### Automated deployment via GitHub (CI/CD)
 
