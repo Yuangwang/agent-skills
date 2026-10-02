@@ -47,13 +47,9 @@ Controls the resources allocated to the Cloud Run service that serves your app.
 
 ## `env` (Environment Variables)
 
-Defines environment variables available during build and/or runtime.
-
-> [!IMPORTANT] Local `.env.local` and `.env*.local` files are gitignored and
-> excluded when uploading source to App Hosting. Before deploying an existing
-> app, inspect any local `.env*` files and declare all required build and
-> runtime environment variables or secrets in `apphosting.yaml` so your first
-> rollout has the configuration it needs.
+Defines environment variables available during build and/or runtime (local
+`.env*` files are gitignored and not uploaded, so declare any required variables
+or secrets here).
 
 - `variable`: The name of the env var (e.g., `NEXT_PUBLIC_API_URL`).
 - `value`: A literal string value.

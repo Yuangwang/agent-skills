@@ -57,30 +57,18 @@ This is the recommended flow for most users.
      }
    }
    ```
-
 1. Create or edit `apphosting.yaml`- see
    [Configuration](references/configuration.md) for more information on how to
-   do so (including declaring any required environment variables or secrets from
-   local `.env*` files).
-1. Ensure the App Hosting backend exists before setting secrets or deploying (in
-   non-interactive/agent mode, `deploy` cannot prompt to create a missing
-   backend). Check
-   `npx -y firebase-tools@latest apphosting:backends:list --project <project-id>`,
-   and if needed create it in a supported region with available quota (e.g.,
-   `us-central1` or `us-east4`; max 10 backends per region):
-
-   ```bash
-   npx -y firebase-tools@latest apphosting:backends:create --backend my-app-id --primary-region us-central1 --root-dir / --project <project-id>
-   ```
-
-1. If the app needs safe access to sensitive keys in `apphosting.yaml`, set and
-   grant access to each secret (*after* the backend exists):
-
-   ```bash
-   printf "%s" "<secret-value>" | npx -y firebase-tools@latest apphosting:secrets:set <secret-name> --project <project-id> --data-file - --force
-   npx -y firebase-tools@latest apphosting:secrets:grantaccess <secret-name> --backend my-app-id --project <project-id>
-   ```
-
+   do so.
+1. Ensure the backend exists (`npx -y firebase-tools@latest apphosting:backends:list`),
+   or create it in a region with available quota (`us-central1` or `us-east4`,
+   max 10 per region):
+   `npx -y firebase-tools@latest apphosting:backends:create --backend my-app-id --primary-region us-central1 --root-dir /`.
+1. If the app needs safe access to sensitive keys, set and grant access (*after*
+   the backend exists) via
+   `printf "%s" "<value>" | npx -y firebase-tools@latest apphosting:secrets:set <secret-name> --data-file - --force`
+   and
+   `npx -y firebase-tools@latest apphosting:secrets:grantaccess <secret-name> --backend my-app-id`.
 1. Run `npx -y firebase-tools@latest deploy` when you are ready to deploy.
 
 ### Automated deployment via GitHub (CI/CD)
