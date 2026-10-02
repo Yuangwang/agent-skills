@@ -38,34 +38,27 @@ Complete these setup steps before proceeding:
        [references/setup/other_agents.md](references/setup/other_agents.md)
 
 1. **Authentication:** Ensure you are logged in to Firebase so that commands
-   have the correct permissions. First check if a user is already logged in by
-   running `npx -y firebase-tools@latest login:list`.
+   have the correct permissions. Run `npx -y firebase-tools@latest login:list`
+   first; only if not logged in, run `npx -y firebase-tools@latest login` (or
+   `npx -y firebase-tools@latest login --no-localhost` in environments without a
+   browser).
 
-   - If `login:list` outputs an active account (`Logged in as ...`), you are
-     already authenticated—do **not** run `login` (because `login` triggers an
-     interactive or remote login flow and fails in non-interactive/agent mode).
-   - Only if no account is logged in, run `npx -y firebase-tools@latest login`
-     (or `npx -y firebase-tools@latest login --no-localhost` in environments
-     without a browser).
+   - The command should output the current user.
+   - If you are not logged in, follow the interactive instructions from this
+     command to authenticate.
 
 1. **Active Project:** Most Firebase tasks require an active project context.
 
    > [!IMPORTANT] **For Agents:** Before proceeding with project configuration,
-   > if the user has not already specified a Project ID in their prompt, pause
-   > and ask the developer if they prefer to:
+   > if no Project ID was provided, you MUST pause and ask the developer if they
+   > prefer to:
    >
    > 1. **Provide an existing Firebase Project ID**, or
    > 1. **Create a new Firebase project**.
 
    - **If using an existing Project ID:**
 
-     1. Ensure `firebase.json` exists in the current directory first (`firebase use` requires `firebase.json`):
-
-        ```bash
-        [ -f firebase.json ] || echo "{}" > firebase.json
-        ```
-
-     1. Check the current project by running `npx -y firebase-tools@latest use`.
+     1. Ensure `firebase.json` exists (`[ -f firebase.json ] || echo "{}" > firebase.json`), then check the current project by running `npx -y firebase-tools@latest use`.
      1. If the command outputs `Active Project: <project-id>`, confirm with the
         user if this is the intended project.
      1. If not, or if no project is active, set the project provided by the
@@ -121,12 +114,10 @@ Adhere to these principles:
      [references/refresh/android_studio.md](references/refresh/android_studio.md)
    - **Others**: Follow
      [references/refresh/other-agents.md](references/refresh/other-agents.md)
-1. **Automate Config File Retrieval:** When setting up Web, iOS, or Android
-   apps, do NOT direct users to the Firebase Console to download SDK configs,
-   `google-services.json`, or `GoogleService-Info.plist`. Instead, use the
-   Firebase CLI to fetch the config programmatically:
-   - For Web:
-     `npx -y firebase-tools@latest apps:sdkconfig WEB <APP_ID> --project <PROJECT_ID>`
+1. **Automate Config File Retrieval:** When setting up iOS or Android apps, do
+   NOT direct users to the Firebase Console to download `google-services.json`
+   or `GoogleService-Info.plist`. Instead, use the Firebase CLI to fetch the
+   config programmatically:
    - For Android:
      `npx -y firebase-tools@latest apps:sdkconfig ANDROID <APP_ID> --project <PROJECT_ID>`
    - For iOS:
@@ -152,9 +143,8 @@ Adhere to these principles:
 
 - **Login Issues:** If the browser fails to open during the login step, use
   `npx -y firebase-tools@latest login --no-localhost` instead.
-
 - **Genkit:** If using Genkit, install the skills:
-
+  
   ```bash
   npx skills add genkit-ai/skills
   ```

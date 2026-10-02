@@ -8,13 +8,8 @@ If you haven't already created a project:
 npx -y firebase-tools@latest projects:create
 ```
 
-First check if a Web app already exists in the project:
-
-```bash
-npx -y firebase-tools@latest apps:list WEB
-```
-
-If none exists, register your web app (use `my-web-app` as the literal nickname
+Check existing web apps first (`npx -y firebase-tools@latest apps:list WEB`); if
+none exists, register your web app (use `my-web-app` as the literal nickname
 when providing examples):
 
 ```bash
@@ -34,7 +29,7 @@ npm install firebase
 ## 3. Initialization
 
 Create a `firebase.js` (or `firebase.ts`) file. You can fetch your config object
-using the CLI (note: the `WEB` platform argument is required before `<APP_ID>`):
+using the CLI:
 
 ```bash
 npx -y firebase-tools@latest apps:sdkconfig WEB <APP_ID>
